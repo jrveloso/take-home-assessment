@@ -34,7 +34,7 @@ const App = () => {
 
   if (unable) {
     return (
-      <main className="flex justify-center">
+      <main>
         <Card>
           <h1 className="card-title">
             Unable to get form data at this time &#128517;
