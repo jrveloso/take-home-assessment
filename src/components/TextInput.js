@@ -11,7 +11,7 @@ const TextInput = ({ name, placeholder, value, onChange, createLabel }) => {
     }
   };
 
-  const label = createLabel(name)
+  const label = createLabel(name);
 
   return (
     <div className="form-control w-full max-w-xs">

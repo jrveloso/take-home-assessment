@@ -4,7 +4,7 @@ import SelectInput from "./SelectInput";
 
 const url = `https://frontend-take-home.fetchrewards.com/form`;
 
-const Form = ({ occupations, states }) => {
+const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -12,13 +12,24 @@ const Form = ({ occupations, states }) => {
     occupation: "",
     state: "",
   });
-  const { name, email, password, occupation, state } = form;
+  const formArray = Object.entries(form);
 
-  // Proper label case
-  const createLabel = (label) => label.charAt(0).toUpperCase() + label.slice(1)
-  console.log(createLabel("name"))
+  // Placeholder text switch case
+  const createPlaceholder = (inputName) => {
+    switch (inputName) {
+      case "name":
+        return "Jonah Hill";
+      case "email":
+        return "jonahhill@demo.com";
+      case "password":
+        return "•••••••";
+    }
+  };
 
-  // Handle text input events
+  // Provide proper label casing
+  const createLabel = (label) => label.charAt(0).toUpperCase() + label.slice(1);
+
+  // Handler for text input events
   const handleChange = ({ target: { name, value } }) => {
     setForm({
       ...form,
@@ -29,10 +40,16 @@ const Form = ({ occupations, states }) => {
   // Handle submit event
   const handleSubmit = async (event) => {
     event.preventDefault();
-    sendForm();
+    let formComplete = false;
+    const inputs = Object.values(form);
+    formComplete = inputs.every((input) => input.length > 0);
+
+    if (formComplete) {
+      sendForm();
+    }
   };
 
-  // POST request to fetch api
+  // POST request to Fetch api
   const sendForm = async () => {
     try {
       const requestOptions = {
@@ -42,55 +59,50 @@ const Form = ({ occupations, states }) => {
       };
       const response = await fetch(url, requestOptions);
       if (response.ok) {
+        console.log(response);
         const data = await response.json();
+        setSubmitted(true);
+        setSuccess(true);
+        console.log(data);
         console.log("SUCCESS");
       }
     } catch (error) {
+      setSubmitted(true);
+      setSuccess(false);
       console.log(error);
     }
   };
 
   return (
     <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
-      <TextInput
-        name="name"
-        value={name}
-        placeholder="John Doe"
-        onChange={handleChange}
-        createLabel={createLabel}
-      />
-      <TextInput
-        name="email"
-        value={email}
-        placeholder="johndoe@doe.com"
-        onChange={handleChange}
-        createLabel={createLabel}
-      />
-      <TextInput
-        name="password"
-        value={password}
-        placeholder="•••••••"
-        onChange={handleChange}
-        createLabel={createLabel}
-      />
-
-      <SelectInput
-        name="occupation"
-        value={occupation}
-        options={occupations}
-        onChange={handleChange}
-        createLabel={createLabel}
-      />
-      <SelectInput
-        name="state"
-        value={state}
-        options={states}
-        onChange={handleChange}
-        createLabel={createLabel}
-      />
+      {formArray.map((input) => {
+        const name = input[0];
+        const value = input[1];
+        if (name === "state" || name === "occupation") {
+          return (
+            <SelectInput
+              name={name}
+              value={value}
+              options={name === "state" ? states : occupations}
+              onChange={handleChange}
+              createLabel={createLabel}
+            />
+          );
+        } else {
+          return (
+            <TextInput
+              name={name}
+              value={value}
+              placeholder={createPlaceholder(name)}
+              onChange={handleChange}
+              createLabel={createLabel}
+            />
+          );
+        }
+      })}
       <button
         type="submit"
-        className="btn btn-xs sm:btn-sm md:btn-md lg:btn-lg bg-indigo-700 hover:bg-indigo-800"
+        className="btn md:btn-md lg:btn-lg bg-indigo-700 hover:bg-indigo-800"
       >
         Submit
       </button>

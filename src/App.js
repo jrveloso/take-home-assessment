@@ -1,12 +1,19 @@
 import React, { useEffect, useState } from "react";
+import Alert from "./components/Alert";
+import Card from "./components/Card";
 import Form from "./components/Form";
 
-const url = `https://frontend-take-home.fetchrewards.com/form`;
+const url = "https://frontend-take-home.fetchrewards.com/form";
 
 const App = () => {
   // Form values for drop down
   const [occupationsList, setOccupationsList] = useState([]);
   const [statesList, setStatesList] = useState([]);
+  const [unable, setUnable] = useState(false);
+
+  // Submission state values
+  const [submitted, setSubmitted] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const getData = async () => {
     try {
@@ -16,6 +23,7 @@ const App = () => {
       setOccupationsList(occupations);
       setStatesList(states);
     } catch (error) {
+      setUnable(true);
       console.log(error);
     }
   };
@@ -24,14 +32,42 @@ const App = () => {
     getData();
   }, []);
 
+  if (unable) {
+    return (
+      <main className="flex justify-center">
+        <Card>
+          <h1 className="card-title">
+            Unable to get form data at this time &#128517;
+          </h1>
+          <button
+            className="btn md:btn-md lg:btn-lg bg-indigo-700 hover:bg-indigo-800"
+            onClick={() => window.location.reload(false)}
+          >
+            Try Again
+          </button>
+        </Card>
+      </main>
+    );
+  }
+
   return (
     <main className="flex justify-center">
-      <div className="card w-96 bg-base-100 shadow-xl mt-5">
-        <div className="card-body">
-          <h2 className="card-title">Sign up!</h2>
-          <Form occupations={occupationsList} states={statesList} />
-        </div>
-      </div>
+      <Card>
+        {submitted ? (
+          <Alert
+            submitted={submitted}
+            setSubmitted={setSubmitted}
+            success={success}
+          />
+        ) : (
+          <Form
+            occupations={occupationsList}
+            states={statesList}
+            setSubmitted={setSubmitted}
+            setSuccess={setSuccess}
+          />
+        )}
+      </Card>
     </main>
   );
 };
