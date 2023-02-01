@@ -5,3 +5,6 @@ This is a take home assessment. The task was to create a form that takes in a us
 https://fetch-frontend-take-home-jordanveloso.netlify.app/
 
 **Tech used:** Create React App, TailwindCSS/DaisyUI
+
+## Optimizations
+With additional time, would add character count validation to the password input
