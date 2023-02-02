@@ -6,17 +6,17 @@ const url = `https://frontend-take-home.fetchrewards.com/form`;
 
 const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-    occupation: "",
-    state: "",
+    name: { id: 1, type: "text", inputValue: "" },
+    email: { id: 2, type: "text", inputValue: "" },
+    password: { id: 3, type: "text", inputValue: "" },
+    occupation: { id: 4, type: "select", inputValue: "" },
+    state: { id: 5, type: "select", inputValue: "" },
   });
   const formArray = Object.entries(form);
 
   // Placeholder text switch case
-  const createPlaceholder = (inputName) => {
-    switch (inputName) {
+  const createPlaceholder = (name) => {
+    switch (name) {
       case "name":
         return "Jonah Hill";
       case "email":
@@ -33,7 +33,10 @@ const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
   const handleChange = ({ target: { name, value } }) => {
     setForm({
       ...form,
-      [name]: value,
+      [name]: {
+        ...form[name],
+        inputValue: value,
+      },
     });
   };
 
@@ -42,7 +45,7 @@ const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
     event.preventDefault();
     let formComplete = false;
     const inputs = Object.values(form);
-    formComplete = inputs.every((input) => input.length > 0);
+    formComplete = inputs.every((input) => input.inputValue.length > 0);
 
     if (formComplete) {
       sendForm();
@@ -59,12 +62,11 @@ const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
       };
       const response = await fetch(url, requestOptions);
       if (response.ok) {
-        console.log(response);
         const data = await response.json();
+        // console.log(data)
         setSubmitted(true);
         setSuccess(true);
-        console.log(data);
-        console.log("SUCCESS");
+        // console.log("SUCCESS");
       }
     } catch (error) {
       setSubmitted(true);
@@ -77,25 +79,27 @@ const Form = ({ occupations, states, setSubmitted, setSuccess }) => {
     <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
       {formArray.map((input) => {
         const name = input[0];
-        const value = input[1];
-        if (name === "state" || name === "occupation") {
+        const {id, type, inputValue} = input[1];
+        if (type === "select") {
           return (
             <SelectInput
               name={name}
-              value={value}
+              value={inputValue}
               options={name === "state" ? states : occupations}
               onChange={handleChange}
               createLabel={createLabel}
+              key={id}
             />
           );
         } else {
           return (
             <TextInput
               name={name}
-              value={value}
+              value={inputValue}
               placeholder={createPlaceholder(name)}
               onChange={handleChange}
               createLabel={createLabel}
+              key={id}
             />
           );
         }

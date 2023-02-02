@@ -13,7 +13,7 @@ const SelectInput = ({ name, value, options, onChange, createLabel }) => {
         onChange={onChange}
         className="select select-bordered"
       >
-        <option selected disabled value={""}>
+        <option defaultValue disabled value={""}>
           Select...
         </option>
         {options.map((option, i) => {
